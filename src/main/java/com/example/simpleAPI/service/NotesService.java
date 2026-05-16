@@ -30,7 +30,10 @@ public class NotesService {
     }
 
 
-    public Note saveNote(Note note) {
+    public Note saveNote(Long userId,Note note) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        note.setUser(user);
         return notesRepository.save(note);
     }
 

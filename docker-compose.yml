@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: notesapp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pandey13
+      MYSQL_DATABASE: NotesDB
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppandey13"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notesapp-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # Override application.properties inside the container
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/NotesDB?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: pandey13
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+      # JWT settings (matches jwt.secret and jwt.expiration-ms)
+      JWT_SECRET: XxsHhRm46OHl4SmUOIJZIb7CfmqcWah9CK4YwtEPhC6
+      JWT_EXPIRATION_MS: "3600000"
+    restart: on-failure
+
+volumes:
+  mysql_data:
