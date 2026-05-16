@@ -1,4 +1,4 @@
-# simpleAPI
+# NotesAPI
 
 Notes API built with Spring Boot, JWT authentication, and MySQL. Supports local development and Docker Compose.
 
